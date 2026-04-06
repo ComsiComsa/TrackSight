@@ -1,6 +1,6 @@
 import type { ITrackerParser } from "./base";
 import type { InterceptedRequest, ParsedEvent } from "../types";
-import { parseQueryParams, decodeBase64, safeJsonParse, createEvent } from "./utils";
+import { parseQueryParams, parseFormBody, decodeBase64, safeJsonParse, createEvent } from "./utils";
 
 export const mixpanelParser: ITrackerParser = {
   type: "mixpanel",
@@ -10,28 +10,50 @@ export const mixpanelParser: ITrackerParser = {
     return (
       url.includes("api-js.mixpanel.com/track") ||
       url.includes("api-js.mixpanel.com/engage") ||
+      url.includes("api-js.mixpanel.com/groups") ||
       url.includes("api.mixpanel.com/track") ||
       url.includes("api.mixpanel.com/engage")
     );
   },
 
   parse(request: InterceptedRequest): ParsedEvent | null {
-    const params = parseQueryParams(request.url);
+    let dataStr: string | null = null;
 
-    // Mixpanel encodes event data as base64 in the "data" param
-    const dataParam = params.data;
-    if (!dataParam) return null;
+    // Mixpanel default: POST with form-encoded body `data=<base64 JSON>`
+    // Can also be JSON directly, or GET with data in query params
+    if (request.body) {
+      // Try form-encoded body first (default SDK behavior)
+      const formParams = parseFormBody(request.body);
+      if (formParams.data) {
+        dataStr = decodeBase64(formParams.data);
+      } else {
+        // Maybe raw JSON body (api_payload_format: 'json')
+        dataStr = request.body;
+      }
+    } else {
+      // Fallback: GET with data in query params
+      const params = parseQueryParams(request.url);
+      if (params.data) {
+        dataStr = decodeBase64(params.data);
+      }
+    }
 
-    const decoded = decodeBase64(dataParam);
-    const data = safeJsonParse(decoded) as Record<string, unknown> | null;
-    if (!data) return null;
+    if (!dataStr) return null;
 
+    // Could be a single event or an array (batched)
+    const parsed = safeJsonParse(dataStr);
+    if (!parsed) return null;
+
+    const events = Array.isArray(parsed) ? parsed : [parsed];
+    if (events.length === 0) return null;
+
+    const data = events[0] as Record<string, unknown>;
     const eventName = (data.event as string) || "unknown";
     const properties = (data.properties as Record<string, unknown>) || {};
 
     const parameters: Record<string, string> = {};
     for (const [k, v] of Object.entries(properties)) {
-      parameters[k] = String(v);
+      parameters[k] = typeof v === "object" ? JSON.stringify(v) : String(v);
     }
 
     const token = (properties.token as string) || "";
@@ -40,10 +62,10 @@ export const mixpanelParser: ITrackerParser = {
       request,
       "mixpanel",
       eventName,
-      "event",
+      request.url.includes("/engage") ? "engage" : "event",
       parameters,
       { trackingId: token },
-      data
+      events.length > 1 ? events : data
     );
   },
 };

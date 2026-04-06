@@ -3,7 +3,7 @@
   "name": "TrackSight",
   "version": "0.1.0",
   "description": "Intercept and inspect analytics events from popular trackers",
-  "permissions": ["webRequest", "storage"],
+  "permissions": ["webRequest", "storage", "activeTab", "tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "src/background/index.ts",
@@ -18,6 +18,7 @@
   ],
   "devtools_page": "src/devtools/devtools.html",
   "action": {
+    "default_popup": "src/popup/index.html",
     "default_icon": {
       "16": "public/icons/icon16.png",
       "48": "public/icons/icon48.png",

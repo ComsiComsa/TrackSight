@@ -1,5 +1,9 @@
 import type { ITrackerParser } from "./base";
 import type { InterceptedRequest, ParsedEvent } from "../types";
+import {
+  matchCustomTracker, parseCustomRequest,
+  matchKeywordRule, parseKeywordMatch,
+} from "./custom";
 
 // Tier 1 parsers
 import { googleGA4Parser } from "./google-ga4";
@@ -22,12 +26,7 @@ import { plausibleParser } from "./plausible";
 import { rudderstackParser } from "./rudderstack";
 import { snapParser } from "./snap";
 
-/**
- * Ordered list of parsers. GA4 before UA to avoid false matches
- * (both match google-analytics.com, but GA4 uses /g/collect).
- */
 const parsers: ITrackerParser[] = [
-  // Tier 1
   googleGA4Parser,
   googleUAParser,
   googleGTMParser,
@@ -35,7 +34,6 @@ const parsers: ITrackerParser[] = [
   segmentParser,
   amplitudeParser,
   mixpanelParser,
-  // Tier 2
   hotjarParser,
   yandexParser,
   tiktokParser,
@@ -48,20 +46,32 @@ const parsers: ITrackerParser[] = [
   snapParser,
 ];
 
-/**
- * Try to parse an intercepted request through all registered parsers.
- * Returns the first successful match, or null if no parser matches.
- */
 export function parseRequest(request: InterceptedRequest): ParsedEvent | null {
+  // 1. Try built-in parsers
   for (const parser of parsers) {
     if (parser.matchesUrl(request.url)) {
       try {
         const result = parser.parse(request);
         if (result) return result;
-      } catch {
-        // Skip failed parsers
-      }
+      } catch {}
     }
   }
+
+  // 2. Try custom tracker URL patterns
+  const customTracker = matchCustomTracker(request.url, request.method);
+  if (customTracker) {
+    try {
+      return parseCustomRequest(request, customTracker);
+    } catch {}
+  }
+
+  // 3. Try keyword rules (matches against URL and/or body)
+  const keywordRule = matchKeywordRule(request.url, request.body);
+  if (keywordRule) {
+    try {
+      return parseKeywordMatch(request, keywordRule);
+    } catch {}
+  }
+
   return null;
 }

@@ -20,26 +20,62 @@ export const segmentParser: ITrackerParser = {
     const data = safeJsonParse(request.body) as Record<string, unknown> | null;
     if (!data) return null;
 
-    const callType = (data.type as string) || "track";
-    const eventName = (data.event as string) || callType;
+    const writeKey = (data.writeKey as string) || "";
 
-    const parameters: Record<string, string> = {};
-    if (data.properties && typeof data.properties === "object") {
-      for (const [k, v] of Object.entries(data.properties as Record<string, unknown>)) {
-        parameters[k] = String(v);
-      }
+    // Handle batch endpoint (/v1/b)
+    if (data.batch && Array.isArray(data.batch)) {
+      const firstEvent = (data.batch as Array<Record<string, unknown>>)[0];
+      if (!firstEvent) return null;
+      return parseSegmentEvent(request, firstEvent, writeKey, data);
     }
-    if (data.userId) parameters.userId = String(data.userId);
-    if (data.anonymousId) parameters.anonymousId = String(data.anonymousId);
 
-    return createEvent(
-      request,
-      "segment",
-      eventName,
-      callType,
-      parameters,
-      { trackingId: (data.writeKey as string) || undefined },
-      data
-    );
+    // Single event
+    return parseSegmentEvent(request, data, writeKey, data);
   },
 };
+
+function parseSegmentEvent(
+  request: InterceptedRequest,
+  event: Record<string, unknown>,
+  writeKey: string,
+  fullPayload: unknown
+): ParsedEvent {
+  const callType = (event.type as string) || "track";
+  const eventName = (event.event as string) || (event.name as string) || callType;
+
+  const parameters: Record<string, string> = {};
+
+  // Properties (track/page)
+  const props = (event.properties as Record<string, unknown>) || {};
+  for (const [k, v] of Object.entries(props)) {
+    parameters[k] = typeof v === "object" ? JSON.stringify(v) : String(v);
+  }
+
+  // Traits (identify/group)
+  const traits = (event.traits as Record<string, unknown>) || {};
+  for (const [k, v] of Object.entries(traits)) {
+    parameters[`trait.${k}`] = typeof v === "object" ? JSON.stringify(v) : String(v);
+  }
+
+  if (event.userId) parameters.userId = String(event.userId);
+  if (event.anonymousId) parameters.anonymousId = String(event.anonymousId);
+  if (event.groupId) parameters.groupId = String(event.groupId);
+
+  // Context page info
+  const context = event.context as Record<string, unknown> | undefined;
+  if (context?.page && typeof context.page === "object") {
+    const page = context.page as Record<string, unknown>;
+    if (page.url) parameters["page.url"] = String(page.url);
+    if (page.title) parameters["page.title"] = String(page.title);
+  }
+
+  return createEvent(
+    request,
+    "segment",
+    eventName,
+    callType,
+    parameters,
+    { trackingId: writeKey },
+    fullPayload
+  );
+}

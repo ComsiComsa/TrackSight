@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Dark theme ── */
+.dark { background-color: #0f172a; color: #e2e8f0; }
+
+/* Backgrounds */
+.dark .bg-white { background-color: #0f172a; }
+.dark .bg-gray-50 { background-color: #1e293b; }
+.dark .bg-gray-100 { background-color: #1e293b; }
+
+/* Text — high contrast */
+.dark .text-gray-900 { color: #f1f5f9; }
+.dark .text-gray-800 { color: #e2e8f0; }
+.dark .text-gray-700 { color: #cbd5e1; }
+.dark .text-gray-600 { color: #94a3b8; }
+.dark .text-gray-500 { color: #94a3b8; }
+.dark .text-gray-400 { color: #64748b; }
+
+/* Borders */
+.dark .border-gray-200 { border-color: #334155; }
+.dark .border-gray-100 { border-color: #1e293b; }
+.dark .border-gray-300 { border-color: #475569; }
+
+/* Hovers */
+.dark .hover\:bg-gray-50:hover { background-color: #1e293b; }
+.dark .hover\:bg-gray-100:hover { background-color: #334155; }
+.dark .hover\:bg-gray-200:hover { background-color: #475569; }
+.dark .hover\:bg-indigo-50:hover { background-color: #1e1b4b; }
+
+/* Colored backgrounds */
+.dark .bg-indigo-50 { background-color: #1e1b4b; }
+.dark .bg-indigo-100 { background-color: #312e81; }
+.dark .text-indigo-700 { color: #a5b4fc; }
+.dark .text-indigo-600 { color: #818cf8; }
+.dark .bg-red-50 { background-color: #450a0a; }
+.dark .text-red-600 { color: #fca5a5; }
+.dark .bg-yellow-50 { background-color: #451a03; }
+.dark .text-yellow-700 { color: #fcd34d; }
+.dark .border-yellow-200 { border-color: #78350f; }
+
+/* Inputs & selects */
+.dark input, .dark select {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+.dark input::placeholder { color: #64748b; }
+.dark input:focus { border-color: #818cf8; }
+
+/* Code & pre */
+.dark pre {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+/* Dividers */
+.dark .divide-gray-200 > :not(:last-child) { border-color: #334155; }
+.dark .divide-gray-100 > :not(:last-child) { border-color: #1e293b; }
+
+/* Sticky group header */
+.dark .sticky { background-color: #1e293b; }
+
+/* Settings buttons */
+.dark .border-indigo-400 { border-color: #6366f1; }

@@ -40,26 +40,29 @@ export type TrackerType =
   | "plausible"
   | "rudderstack"
   | "snap"
+  | "custom"
   | "unknown";
 
+// Colors chosen for good contrast on both light and dark backgrounds
 export const TRACKER_COLORS: Record<TrackerType, string> = {
   ga4: "#E37400",
-  "google-ua": "#E37400",
+  "google-ua": "#D97706",
   gtm: "#4285F4",
   facebook: "#1877F2",
-  segment: "#52BD94",
-  amplitude: "#1E61F0",
-  mixpanel: "#7856FF",
-  hotjar: "#FD3A5C",
-  yandex: "#FC3F1D",
-  tiktok: "#000000",
-  posthog: "#1D4AFF",
-  pinterest: "#E60023",
-  linkedin: "#0A66C2",
-  heap: "#FF6B35",
-  plausible: "#5850EC",
-  rudderstack: "#1E88E5",
-  snap: "#FFFC00",
+  segment: "#10B981",
+  amplitude: "#3B82F6",
+  mixpanel: "#8B5CF6",
+  hotjar: "#EF4444",
+  yandex: "#EF4444",
+  tiktok: "#06B6D4",
+  posthog: "#3B82F6",
+  pinterest: "#EF4444",
+  linkedin: "#0EA5E9",
+  heap: "#F97316",
+  plausible: "#8B5CF6",
+  rudderstack: "#3B82F6",
+  snap: "#EAB308",
+  custom: "#14B8A6",
   unknown: "#6B7280",
 };
 
@@ -81,5 +84,6 @@ export const TRACKER_NAMES: Record<TrackerType, string> = {
   plausible: "Plausible",
   rudderstack: "RudderStack",
   snap: "Snap Pixel",
+  custom: "Custom",
   unknown: "Unknown",
 };
