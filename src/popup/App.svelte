@@ -6,7 +6,7 @@
   import SettingsTab from "./components/SettingsTab.svelte";
 
   let events = $state<ParsedEvent[]>([]);
-  let paused = $state(false);
+  let paused = $state(true);
   let activeTab = $state<"dashboard" | "events" | "settings">("dashboard");
   let settings = $state<Settings>({ ...DEFAULT_SETTINGS });
   let initialTrackerFilter = $state<string | null>(null);

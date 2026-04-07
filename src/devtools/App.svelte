@@ -8,7 +8,7 @@
   import SettingsTab from "../popup/components/SettingsTab.svelte";
 
   let events = $state<ParsedEvent[]>([]);
-  let paused = $state(false);
+  let paused = $state(true);
   let searchQuery = $state("");
   let activeTrackers = $state<Set<string>>(new Set());
   let selectedEvent = $state<ParsedEvent | null>(null);
