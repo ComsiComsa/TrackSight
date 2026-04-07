@@ -79,10 +79,15 @@
         }
       });
 
-      // Small delay to ensure listener is registered before background responds
-      setTimeout(() => {
+      // Request existing events — retry if first attempt returns nothing
+      const requestEvents = () => {
         port.postMessage({ type: MSG.GET_EVENTS, payload: { tabId: tab.id } });
-      }, 0);
+      };
+      requestEvents();
+      // Retry after 100ms in case background wasn't ready
+      setTimeout(() => {
+        if (events.length === 0) requestEvents();
+      }, 100);
     } catch {}
   }
 
