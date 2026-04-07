@@ -9,48 +9,60 @@
 
   let { settings, t, onSave }: Props = $props();
 
+  // Safe accessors
+  let trackers = $derived(settings.customTrackers ?? []);
+  let rules = $derived(settings.keywordRules ?? []);
+
   // Custom tracker form
   let showAddTracker = $state(false);
   let newTrackerName = $state("");
   let newTrackerUrl = $state("");
   let newTrackerMethod = $state<"GET" | "POST" | "ANY">("ANY");
+  let trackerError = $state("");
 
   // Keyword rule form
   let showAddKeyword = $state(false);
   let newKeywordLabel = $state("");
   let newKeywordWords = $state("");
   let newKeywordMatch = $state<"url" | "body" | "both">("both");
+  let keywordError = $state("");
 
   function setTheme(theme: Settings["theme"]) {
     onSave({ ...settings, theme });
   }
 
-
   // --- Custom trackers ---
   function addTracker() {
-    if (!newTrackerName.trim() || !newTrackerUrl.trim()) return;
+    trackerError = "";
+    const name = newTrackerName.trim();
+    const url = newTrackerUrl.trim();
+    if (!name) { trackerError = "Name is required"; return; }
+    if (!url) { trackerError = "URL pattern is required"; return; }
+    if (trackers.some((t) => t.urlPattern === url)) { trackerError = "This URL pattern already exists"; return; }
+
     const tracker: CustomTracker = {
       id: crypto.randomUUID(),
-      name: newTrackerName.trim(),
-      urlPattern: newTrackerUrl.trim(),
+      name,
+      urlPattern: url,
       method: newTrackerMethod,
       enabled: true,
     };
-    onSave({ ...settings, customTrackers: [...(settings.customTrackers ?? []), tracker] });
+    onSave({ ...settings, customTrackers: [...trackers, tracker] });
     newTrackerName = "";
     newTrackerUrl = "";
     newTrackerMethod = "ANY";
+    trackerError = "";
     showAddTracker = false;
   }
 
   function removeTracker(id: string) {
-    onSave({ ...settings, customTrackers: (settings.customTrackers ?? []).filter((t) => t.id !== id) });
+    onSave({ ...settings, customTrackers: trackers.filter((t) => t.id !== id) });
   }
 
   function toggleTracker(id: string) {
     onSave({
       ...settings,
-      customTrackers: (settings.customTrackers ?? []).map((t) =>
+      customTrackers: trackers.map((t) =>
         t.id === id ? { ...t, enabled: !t.enabled } : t
       ),
     });
@@ -58,29 +70,39 @@
 
   // --- Keyword rules ---
   function addKeywordRule() {
-    if (!newKeywordLabel.trim() || !newKeywordWords.trim()) return;
+    keywordError = "";
+    const label = newKeywordLabel.trim();
+    const words = newKeywordWords.trim();
+    if (!label) { keywordError = "Label is required"; return; }
+    if (!words) { keywordError = "At least one keyword is required"; return; }
+
+    const keywords = words.split(",").map((k) => k.trim()).filter(Boolean);
+    if (keywords.length === 0) { keywordError = "At least one keyword is required"; return; }
+    if (rules.some((r) => r.label === label)) { keywordError = "This label already exists"; return; }
+
     const rule: KeywordRule = {
       id: crypto.randomUUID(),
-      label: newKeywordLabel.trim(),
-      keywords: newKeywordWords.split(",").map((k) => k.trim()).filter(Boolean),
+      label,
+      keywords,
       matchIn: newKeywordMatch,
       enabled: true,
     };
-    onSave({ ...settings, keywordRules: [...(settings.keywordRules ?? []), rule] });
+    onSave({ ...settings, keywordRules: [...rules, rule] });
     newKeywordLabel = "";
     newKeywordWords = "";
     newKeywordMatch = "both";
+    keywordError = "";
     showAddKeyword = false;
   }
 
   function removeKeywordRule(id: string) {
-    onSave({ ...settings, keywordRules: (settings.keywordRules ?? []).filter((r) => r.id !== id) });
+    onSave({ ...settings, keywordRules: rules.filter((r) => r.id !== id) });
   }
 
   function toggleKeywordRule(id: string) {
     onSave({
       ...settings,
-      keywordRules: (settings.keywordRules ?? []).map((r) =>
+      keywordRules: rules.map((r) =>
         r.id === id ? { ...r, enabled: !r.enabled } : r
       ),
     });
@@ -109,7 +131,7 @@
         <div class="text-[10px] text-gray-400">{t("settings.keyword_rules.hint")}</div>
       </div>
       <button
-        onclick={() => (showAddKeyword = !showAddKeyword)}
+        onclick={() => { showAddKeyword = !showAddKeyword; keywordError = ""; }}
         class="px-2 py-1 text-[10px] rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
       >+ {t("settings.keyword_rules.add")}</button>
     </div>
@@ -128,6 +150,9 @@
           bind:value={newKeywordWords}
           class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono"
         />
+        {#if keywordError}
+          <div class="text-[10px] text-red-500">{keywordError}</div>
+        {/if}
         <div class="flex gap-1.5 items-center">
           <span class="text-[10px] text-gray-500">{t("settings.keyword_rules.match_in")}:</span>
           {#each [["url", "settings.keyword_rules.match_url"], ["body", "settings.keyword_rules.match_body"], ["both", "settings.keyword_rules.match_both"]] as [val, label]}
@@ -137,22 +162,22 @@
             >{t(label)}</button>
           {/each}
           <div class="flex-1"></div>
-          <button onclick={() => (showAddKeyword = false)} class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+          <button onclick={() => { showAddKeyword = false; keywordError = ""; }} class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Cancel</button>
           <button onclick={addKeywordRule} class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-500">Add</button>
         </div>
       </div>
     {/if}
 
-    {#if (settings.keywordRules ?? []).length > 0}
+    {#if rules.length > 0}
       <div class="space-y-1">
-        {#each settings.keywordRules ?? [] as rule}
+        {#each rules as rule}
           <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
             <button
               onclick={() => toggleKeywordRule(rule.id)}
-              class="w-3 h-3 rounded-sm border shrink-0 {rule.enabled ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'}"
+              class="w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors {rule.enabled ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300 bg-white'}"
             >
               {#if rule.enabled}
-                <svg class="w-3 h-3 text-white" viewBox="0 0 12 12"><path d="M3 6l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6l2.5 2.5 4.5-5"/></svg>
               {/if}
             </button>
             <div class="flex-1 min-w-0">
@@ -178,7 +203,7 @@
         <div class="text-[10px] text-gray-400">{t("settings.custom_trackers.hint")}</div>
       </div>
       <button
-        onclick={() => (showAddTracker = !showAddTracker)}
+        onclick={() => { showAddTracker = !showAddTracker; trackerError = ""; }}
         class="px-2 py-1 text-[10px] rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
       >+ {t("settings.custom_trackers.add")}</button>
     </div>
@@ -189,6 +214,9 @@
           class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400" />
         <input type="text" placeholder={t("settings.custom_trackers.url_pattern") + " (e.g. api.example.com/events)"} bind:value={newTrackerUrl}
           class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono" />
+        {#if trackerError}
+          <div class="text-[10px] text-red-500">{trackerError}</div>
+        {/if}
         <div class="flex gap-1.5 items-center">
           <select bind:value={newTrackerMethod}
             class="px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400">
@@ -197,22 +225,22 @@
             <option value="POST">POST</option>
           </select>
           <div class="flex-1"></div>
-          <button onclick={() => (showAddTracker = false)} class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+          <button onclick={() => { showAddTracker = false; trackerError = ""; }} class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Cancel</button>
           <button onclick={addTracker} class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-500">Add</button>
         </div>
       </div>
     {/if}
 
-    {#if (settings.customTrackers ?? []).length > 0}
+    {#if trackers.length > 0}
       <div class="space-y-1">
-        {#each settings.customTrackers ?? [] as tracker}
+        {#each trackers as tracker}
           <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
             <button
               onclick={() => toggleTracker(tracker.id)}
-              class="w-3 h-3 rounded-sm border shrink-0 {tracker.enabled ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'}"
+              class="w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors {tracker.enabled ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300 bg-white'}"
             >
               {#if tracker.enabled}
-                <svg class="w-3 h-3 text-white" viewBox="0 0 12 12"><path d="M3 6l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6l2.5 2.5 4.5-5"/></svg>
               {/if}
             </button>
             <div class="flex-1 min-w-0">

@@ -28,6 +28,13 @@
   }
   loadSettings();
 
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes.settings?.newValue) {
+      const s = changes.settings.newValue;
+      settings = { ...DEFAULT_SETTINGS, ...s, customTrackers: s.customTrackers ?? [], keywordRules: s.keywordRules ?? [] };
+    }
+  });
+
   async function saveSettings(newSettings: Settings) {
     const safe = { ...newSettings, customTrackers: newSettings.customTrackers ?? [], keywordRules: newSettings.keywordRules ?? [] };
     settings = safe;
@@ -175,13 +182,13 @@
       </button>
 
       <!-- Clear -->
-      <button onclick={handleClear} class="p-1.5 rounded transition-colors hover:bg-indigo-500/50" title={t("events.clear")}>
+      <button onclick={handleClear} disabled={events.length === 0} class="p-1.5 rounded transition-colors {events.length === 0 ? 'opacity-30 cursor-default' : 'hover:bg-indigo-500/50'}" title={t("events.clear")}>
         <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M5.5 4V2.5h5V4M6 7v5M10 7v5M3.5 4l.5 9.5h8l.5-9.5"/></svg>
       </button>
 
       <!-- Export -->
       <div class="relative">
-        <button onclick={() => (exportOpen = !exportOpen)} class="p-1.5 rounded transition-colors hover:bg-indigo-500/50" title={t("events.export")}>
+        <button onclick={() => { if (events.length > 0) exportOpen = !exportOpen; }} class="p-1.5 rounded transition-colors {events.length === 0 ? 'opacity-30 cursor-default' : 'hover:bg-indigo-500/50'}" title={t("events.export")}>
           <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M2 13h12"/></svg>
         </button>
         {#if exportOpen}
