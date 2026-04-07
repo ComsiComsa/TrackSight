@@ -21,9 +21,19 @@
   let port: chrome.runtime.Port;
 
   async function loadSettings() {
-    const result = await chrome.storage.local.get("settings");
-    if (result.settings) {
-      settings = { ...DEFAULT_SETTINGS, ...result.settings, customTrackers: result.settings.customTrackers ?? [], keywordRules: result.settings.keywordRules ?? [] };
+    try {
+      const result = await chrome.storage.local.get("settings");
+      if (result.settings && typeof result.settings === "object") {
+        const s = result.settings;
+        settings = {
+          ...DEFAULT_SETTINGS,
+          ...s,
+          customTrackers: Array.isArray(s.customTrackers) ? s.customTrackers : [],
+          keywordRules: Array.isArray(s.keywordRules) ? s.keywordRules : [],
+        };
+      }
+    } catch {
+      settings = { ...DEFAULT_SETTINGS };
     }
   }
   loadSettings();

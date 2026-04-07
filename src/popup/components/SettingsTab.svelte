@@ -9,9 +9,15 @@
 
   let { settings, t, onSave }: Props = $props();
 
-  // Safe accessors
-  let trackers = $derived(settings.customTrackers ?? []);
-  let rules = $derived(settings.keywordRules ?? []);
+  // Safe accessors — filter out corrupted entries
+  let trackers = $derived(
+    (Array.isArray(settings.customTrackers) ? settings.customTrackers : [])
+      .filter((t): t is CustomTracker => t != null && typeof t.id === "string")
+  );
+  let rules = $derived(
+    (Array.isArray(settings.keywordRules) ? settings.keywordRules : [])
+      .filter((r): r is KeywordRule => r != null && typeof r.id === "string")
+  );
 
   // Custom tracker form
   let showAddTracker = $state(false);
@@ -183,7 +189,7 @@
             <div class="flex-1 min-w-0">
               <div class="text-xs font-medium text-gray-700 truncate">{rule.label}</div>
               <div class="text-[10px] text-gray-400 font-mono truncate">
-                {rule.matchIn}: {rule.keywords.join(", ")}
+                {rule.matchIn}: {(Array.isArray(rule.keywords) ? rule.keywords : []).join(", ")}
               </div>
             </div>
             <button onclick={() => removeKeywordRule(rule.id)} class="text-gray-400 hover:text-red-500 text-sm shrink-0">&times;</button>
