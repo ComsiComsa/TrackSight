@@ -31,8 +31,9 @@
   }
 
   async function saveSettings(newSettings: Settings) {
-    settings = newSettings;
-    await chrome.storage.local.set({ settings: newSettings });
+    const safe = { ...newSettings, customTrackers: newSettings.customTrackers ?? [], keywordRules: newSettings.keywordRules ?? [] };
+    settings = safe;
+    await chrome.storage.local.set({ settings: safe });
   }
 
   async function init() {

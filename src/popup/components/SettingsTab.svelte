@@ -203,9 +203,9 @@
       </div>
     {/if}
 
-    {#if settings.customTrackers.length > 0}
+    {#if (settings.customTrackers ?? []).length > 0}
       <div class="space-y-1">
-        {#each settings.customTrackers as tracker}
+        {#each settings.customTrackers ?? [] as tracker}
           <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
             <button
               onclick={() => toggleTracker(tracker.id)}
