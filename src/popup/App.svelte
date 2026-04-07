@@ -79,6 +79,11 @@
         }
       });
 
+      port.onDisconnect.addListener(() => {
+        // Reconnect if service worker restarted
+        setTimeout(() => { try { init(); } catch {} }, 500);
+      });
+
       // Request existing events — retry if first attempt returns nothing
       const requestEvents = () => {
         port.postMessage({ type: MSG.GET_EVENTS, payload: { tabId: tab.id } });

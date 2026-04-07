@@ -8,6 +8,8 @@
  */
 
 var TS_SOURCE = "tracksight-injected";
+var TS_METHOD = Symbol();
+var TS_URL = Symbol();
 
 function sendIntercepted(data) {
   try {
@@ -23,7 +25,7 @@ function sendIntercepted(data) {
           source: data.source,
         },
       },
-      "*"
+      window.location.origin
     );
   } catch {}
 }
@@ -53,22 +55,22 @@ var originalSend = XMLHttpRequest.prototype.send;
 
 XMLHttpRequest.prototype.open = function (method, url) {
   try {
-    this._ts_method = (method || "GET").toUpperCase();
-    this._ts_url = new URL(String(url), window.location.origin).href;
+    this[TS_METHOD] = (method || "GET").toUpperCase();
+    this[TS_URL] = new URL(String(url), window.location.origin).href;
   } catch {
-    this._ts_url = String(url);
+    this[TS_URL] = String(url);
   }
   return originalOpen.apply(this, arguments);
 };
 
 XMLHttpRequest.prototype.send = function (body) {
   try {
-    if (this._ts_url) {
+    if (this[TS_URL]) {
       var bodyStr = null;
       if (body) {
         try { bodyStr = typeof body === "string" ? body : null; } catch {}
       }
-      sendIntercepted({ url: this._ts_url, method: this._ts_method, body: bodyStr, source: "xhr" });
+      sendIntercepted({ url: this[TS_URL], method: this[TS_METHOD], body: bodyStr, source: "xhr" });
     }
   } catch {}
   return originalSend.apply(this, arguments);

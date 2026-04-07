@@ -1,5 +1,5 @@
 import type { InterceptedRequest, ParsedEvent, CustomTracker, KeywordRule } from "../types";
-import { safeJsonParse, parseQueryParams, createEvent } from "./utils";
+import { safeJsonParse, parseQueryParams, createEvent, isSafeKey } from "./utils";
 
 let customTrackers: CustomTracker[] = [];
 let keywordRules: KeywordRule[] = [];
@@ -55,6 +55,7 @@ export function parseCustomRequest(
   const parameters: Record<string, string> = { ...params };
   if (bodyData && typeof bodyData === "object") {
     for (const [k, v] of Object.entries(bodyData)) {
+      if (!isSafeKey(k)) continue;
       parameters[k] = typeof v === "object" ? JSON.stringify(v) : String(v);
     }
   }
@@ -90,6 +91,7 @@ export function parseKeywordMatch(
   const parameters: Record<string, string> = { ...params };
   if (bodyData && typeof bodyData === "object") {
     for (const [k, v] of Object.entries(bodyData)) {
+      if (!isSafeKey(k)) continue;
       parameters[k] = typeof v === "object" ? JSON.stringify(v) : String(v);
     }
   }

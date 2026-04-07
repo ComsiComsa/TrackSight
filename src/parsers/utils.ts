@@ -43,6 +43,11 @@ export function safeJsonParse(str: string): unknown {
   }
 }
 
+const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+export function isSafeKey(key: string): boolean {
+  return !DANGEROUS_KEYS.has(key);
+}
+
 /** Create a ParsedEvent with defaults */
 export function createEvent(
   request: InterceptedRequest,

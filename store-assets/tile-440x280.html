@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 440px; height: 280px; overflow: hidden; font-family: 'Inter', -apple-system, sans-serif; }
+  .tile {
+    width: 440px; height: 280px;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #9333EA 100%);
+    display: flex; align-items: center; justify-content: center; gap: 24px;
+    padding: 32px;
+    position: relative;
+  }
+  .tile::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .logo { width: 90px; height: 90px; filter: drop-shadow(0 6px 20px rgba(0,0,0,0.3)); z-index: 1; }
+  .text { z-index: 1; color: white; }
+  .title { font-size: 36px; font-weight: 900; letter-spacing: -0.5px; }
+  .sub { font-size: 13px; font-weight: 400; opacity: 0.8; margin-top: 8px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="tile">
+  <img class="logo" src="../public/icons/logo.svg">
+  <div class="text">
+    <div class="title">TrackSight</div>
+    <div class="sub">See every analytics event<br>fired on any page. Real-time.</div>
+  </div>
+</div>
+</body>
+</html>

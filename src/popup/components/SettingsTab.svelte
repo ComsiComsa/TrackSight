@@ -139,6 +139,7 @@
             type="text"
             placeholder="e.g. Backend Events"
             bind:value={newKeywordLabel}
+            maxlength="200"
             class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400"
           />
           <div class="text-[9px] text-gray-400 mt-0.5 px-1">Display name for matched requests</div>
@@ -148,6 +149,7 @@
             type="text"
             placeholder="e.g. /track, /event, analytics"
             bind:value={newKeywordWords}
+            maxlength="1000"
             class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono"
           />
           <div class="text-[9px] text-gray-400 mt-0.5 px-1">Comma-separated keywords to match in requests</div>
@@ -213,12 +215,12 @@
     {#if showAddTracker}
       <div class="bg-gray-50 rounded-lg border border-gray-200 p-2.5 mb-2 space-y-2">
         <div>
-          <input type="text" placeholder="e.g. My Analytics" bind:value={newTrackerName}
+          <input type="text" placeholder="e.g. My Analytics" bind:value={newTrackerName} maxlength="200"
             class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400" />
           <div class="text-[9px] text-gray-400 mt-0.5 px-1">Display name for this tracker</div>
         </div>
         <div>
-          <input type="text" placeholder="e.g. api.example.com/events" bind:value={newTrackerUrl}
+          <input type="text" placeholder="e.g. api.example.com/events" bind:value={newTrackerUrl} maxlength="500"
             class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono" />
           <div class="text-[9px] text-gray-400 mt-0.5 px-1">Part of URL to match (e.g. domain, path, or both)</div>
         </div>

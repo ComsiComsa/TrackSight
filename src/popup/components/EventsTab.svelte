@@ -12,11 +12,19 @@
 
   let { events, t, initialTrackerFilter = null }: Props = $props();
 
+  let searchInput = $state("");
   let searchQuery = $state("");
+  let debounceTimer: ReturnType<typeof setTimeout>;
   let activeTrackers = $state<Set<string>>(new Set());
   let activeEventTypes = $state<Set<string>>(new Set());
   let selectedEvent = $state<ParsedEvent | null>(null);
   let eventTypeFilterOpen = $state(true);
+
+  $effect(() => {
+    const value = searchInput;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => { searchQuery = value; }, 200);
+  });
 
   $effect(() => {
     if (initialTrackerFilter) {
@@ -74,7 +82,7 @@
   <input
     type="text"
     placeholder={t("events.search")}
-    bind:value={searchQuery}
+    bind:value={searchInput}
     class="flex-1 px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 focus:bg-white dark:focus:bg-gray-700 min-w-0"
   />
 </div>

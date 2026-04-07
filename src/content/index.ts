@@ -13,6 +13,7 @@ function injectPageScript() {
 
 // Bridge: page context -> background service worker
 window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin) return;
   if (event.source !== window || event.data?.source !== TS_SOURCE) return;
 
   if (event.data.type === "INTERCEPTED_REQUEST") {

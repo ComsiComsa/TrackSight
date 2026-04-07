@@ -68,6 +68,7 @@ chrome.runtime.onMessage.addListener((message: Message, sender) => {
   if (!tabId) return;
 
   const request = message.payload as InterceptedRequest;
+  if (typeof request?.url !== 'string' || typeof request?.method !== 'string' || typeof request?.timestamp !== 'number') return;
   const parsed = parseRequest(request);
   if (!parsed) return;
 

@@ -5,6 +5,9 @@
   "description": "Intercept and inspect analytics events from popular trackers",
   "permissions": ["webRequest", "storage", "activeTab", "tabs"],
   "host_permissions": ["<all_urls>"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
