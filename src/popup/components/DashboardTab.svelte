@@ -12,10 +12,6 @@
 
   let searchQuery = $state("");
 
-  // Track previous event counts per tracker for animation
-  let prevCounts = $state<Map<string, number>>(new Map());
-  let animatingTrackers = $state<Set<string>>(new Set());
-
   interface TrackerSummary {
     tracker: string;
     trackerName: string;
@@ -64,26 +60,6 @@
     }
 
     return [...map.values()].sort((a, b) => b.eventCount - a.eventCount);
-  });
-
-  // Animate counters when they increase (must be in $effect, not $derived)
-  $effect(() => {
-    const newAnimating = new Set<string>();
-    for (const tr of trackers) {
-      const prev = prevCounts.get(tr.trackerName);
-      if (prev !== undefined && prev < tr.eventCount) {
-        newAnimating.add(tr.trackerName);
-      }
-    }
-    const nextCounts = new Map<string, number>();
-    for (const tr of trackers) {
-      nextCounts.set(tr.trackerName, tr.eventCount);
-    }
-    prevCounts = nextCounts;
-    if (newAnimating.size > 0) {
-      animatingTrackers = newAnimating;
-      setTimeout(() => { animatingTrackers = new Set(); }, 350);
-    }
   });
 
   function formatTime(ts: number): string {
@@ -175,7 +151,7 @@
               class="font-semibold text-xs"
               style="color: {tr.color};"
             >{tr.trackerName}</span>
-            <span class="ml-auto text-[10px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded {animatingTrackers.has(tr.trackerName) ? 'count-animate' : ''}">
+            <span class="ml-auto text-[10px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
               {tr.eventCount} {t("events.count")}
             </span>
           </div>
@@ -222,14 +198,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  @keyframes count-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-  :global(.count-animate) {
-    animation: count-pulse 0.3s ease-out;
-  }
-</style>
