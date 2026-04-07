@@ -2,4 +2,7 @@ node_modules/
 dist/
 bun.lock
 .idea/
+.claude/
 .claude-flow/
+.mcp.json
+CLAUDE.md
