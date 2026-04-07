@@ -40,6 +40,10 @@ export type TrackerType =
   | "plausible"
   | "rudderstack"
   | "snap"
+  | "twitter"
+  | "reddit"
+  | "criteo"
+  | "adobe"
   | "custom"
   | "unknown";
 
@@ -62,6 +66,10 @@ export const TRACKER_COLORS: Record<TrackerType, string> = {
   plausible: "#8B5CF6",
   rudderstack: "#3B82F6",
   snap: "#EAB308",
+  twitter: "#1DA1F2",
+  reddit: "#FF4500",
+  criteo: "#F48120",
+  adobe: "#FF0000",
   custom: "#14B8A6",
   unknown: "#6B7280",
 };
@@ -84,6 +92,10 @@ export const TRACKER_NAMES: Record<TrackerType, string> = {
   plausible: "Plausible",
   rudderstack: "RudderStack",
   snap: "Snap Pixel",
+  twitter: "Twitter/X Pixel",
+  reddit: "Reddit Pixel",
+  criteo: "Criteo",
+  adobe: "Adobe Analytics",
   custom: "Custom",
   unknown: "Unknown",
 };

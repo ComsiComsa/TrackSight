@@ -25,6 +25,10 @@ import { heapParser } from "./heap";
 import { plausibleParser } from "./plausible";
 import { rudderstackParser } from "./rudderstack";
 import { snapParser } from "./snap";
+import { twitterParser } from "./twitter";
+import { redditParser } from "./reddit";
+import { criteoParser } from "./criteo";
+import { adobeParser } from "./adobe";
 
 const parsers: ITrackerParser[] = [
   googleGA4Parser,
@@ -44,6 +48,10 @@ const parsers: ITrackerParser[] = [
   plausibleParser,
   rudderstackParser,
   snapParser,
+  twitterParser,
+  redditParser,
+  criteoParser,
+  adobeParser,
 ];
 
 export function parseRequest(request: InterceptedRequest): ParsedEvent | null {

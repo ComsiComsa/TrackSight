@@ -10,6 +10,23 @@
 
   let { events, t, onSelect }: Props = $props();
 
+  let listContainer: HTMLDivElement | undefined = $state();
+  let prevEventCount = $state(0);
+
+  $effect(() => {
+    const count = events.length;
+    if (count > prevEventCount && listContainer) {
+      const { scrollTop, scrollHeight, clientHeight } = listContainer;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      if (isNearBottom) {
+        requestAnimationFrame(() => {
+          listContainer?.scrollTo({ top: listContainer.scrollHeight, behavior: "smooth" });
+        });
+      }
+    }
+    prevEventCount = count;
+  });
+
   // Group by trackerName (so custom trackers get their own group)
   let grouped = $derived.by(() => {
     const groups = new Map<string, { color: string; events: ParsedEvent[] }>();
@@ -50,7 +67,7 @@
   }
 </script>
 
-<div class="flex-1 overflow-auto min-h-0">
+<div class="flex-1 overflow-auto min-h-0" bind:this={listContainer}>
   {#if events.length === 0}
     <div class="flex flex-col items-center justify-center h-full text-gray-400 px-6">
       <div class="text-3xl mb-2">📡</div>

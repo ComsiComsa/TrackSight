@@ -12,11 +12,22 @@
   let viewMode = $state<"parsed" | "raw">("parsed");
   let showPayload = $state(false);
   let copiedKey = $state<string | null>(null);
+  let copiedJson = $state(false);
 
   function copyValue(key: string, value: string) {
     navigator.clipboard.writeText(value);
     copiedKey = key;
     setTimeout(() => (copiedKey = null), 1500);
+  }
+
+  function copyEventJson() {
+    navigator.clipboard.writeText(JSON.stringify(event, null, 2));
+    copiedJson = true;
+    setTimeout(() => (copiedJson = false), 1500);
+  }
+
+  function isEmptyValue(value: string): boolean {
+    return value === "" || value === "undefined" || value === "null";
   }
 
   // Separate parameters into meaningful groups
@@ -26,6 +37,7 @@
     const technical: [string, string][] = [];
 
     for (const [k, v] of entries) {
+      if (isEmptyValue(v)) continue;
       // Technical/internal params: short cryptic keys, IDs, hashes, versions
       if (
         k.length <= 3 ||
@@ -70,6 +82,10 @@
       style="color: {TRACKER_COLORS[event.tracker]}; background-color: {TRACKER_COLORS[event.tracker]}18;"
     >{event.trackerName}</span>
     <span class="font-semibold text-sm text-gray-900 flex-1 truncate">{event.eventName}</span>
+    <button
+      onclick={copyEventJson}
+      class="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium {copiedJson ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'} transition-colors"
+    >{copiedJson ? "Copied!" : "Copy JSON"}</button>
     <span class="text-[10px] text-gray-400 font-mono shrink-0">{formatTime(event.timestamp)}</span>
   </div>
 
