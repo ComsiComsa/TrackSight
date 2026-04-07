@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "vitest run"
   },
   "description": "Chrome extension to intercept and inspect analytics events from popular trackers in real-time",
   "devDependencies": {
@@ -30,6 +31,7 @@
     "svelte": "^5.55.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
-    "vite": "6"
+    "vite": "6",
+    "vitest": "^4.1.3"
   }
 }

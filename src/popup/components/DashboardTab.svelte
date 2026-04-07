@@ -10,6 +10,12 @@
 
   let { events, t, onSelectTracker }: Props = $props();
 
+  let searchQuery = $state("");
+
+  // Track previous event counts per tracker for animation
+  let prevCounts = $state<Map<string, number>>(new Map());
+  let animatingTrackers = $state<Set<string>>(new Set());
+
   interface TrackerSummary {
     tracker: string;
     trackerName: string;
@@ -57,7 +63,32 @@
       }
     }
 
-    return [...map.values()].sort((a, b) => b.eventCount - a.eventCount);
+    const sorted = [...map.values()].sort((a, b) => b.eventCount - a.eventCount);
+
+    // Detect count changes and trigger animations
+    const newAnimating = new Set<string>();
+    for (const tr of sorted) {
+      const prev = prevCounts.get(tr.trackerName);
+      if (prev !== undefined && prev < tr.eventCount) {
+        newAnimating.add(tr.trackerName);
+      }
+    }
+
+    if (newAnimating.size > 0) {
+      animatingTrackers = newAnimating;
+      setTimeout(() => {
+        animatingTrackers = new Set();
+      }, 350);
+    }
+
+    // Update previous counts
+    const nextCounts = new Map<string, number>();
+    for (const tr of sorted) {
+      nextCounts.set(tr.trackerName, tr.eventCount);
+    }
+    prevCounts = nextCounts;
+
+    return sorted;
   });
 
   function formatTime(ts: number): string {
@@ -74,6 +105,21 @@
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
   }
+
+  let filteredTrackers = $derived.by(() => {
+    if (!searchQuery) return trackers;
+    const q = searchQuery.toLowerCase();
+    return trackers.filter((tr) => {
+      if (tr.trackerName.toLowerCase().includes(q)) return true;
+      for (const id of tr.trackingIds) {
+        if (id.toLowerCase().includes(q)) return true;
+      }
+      for (const name of tr.eventTypes.keys()) {
+        if (name.toLowerCase().includes(q)) return true;
+      }
+      return false;
+    });
+  });
 </script>
 
 <div class="flex-1 overflow-auto min-h-0">
@@ -107,9 +153,19 @@
       </div>
     </div>
 
+    <!-- Search -->
+    <div class="flex items-center gap-1 px-2 py-1.5 border-b border-gray-200 dark:border-gray-700 shrink-0">
+      <input
+        type="text"
+        placeholder="Search trackers, IDs, events..."
+        bind:value={searchQuery}
+        class="flex-1 px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 focus:bg-white dark:focus:bg-gray-700 min-w-0"
+      />
+    </div>
+
     <!-- Tracker cards -->
     <div class="p-2 flex flex-col gap-2">
-      {#each trackers as tr}
+      {#each filteredTrackers as tr}
         <button
           class="w-full text-left rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-sm transition-all p-3"
           onclick={() => onSelectTracker(tr.trackerName)}
@@ -124,7 +180,7 @@
               class="font-semibold text-xs"
               style="color: {tr.color};"
             >{tr.trackerName}</span>
-            <span class="ml-auto text-[10px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+            <span class="ml-auto text-[10px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded {animatingTrackers.has(tr.trackerName) ? 'count-animate' : ''}">
               {tr.eventCount} {t("events.count")}
             </span>
           </div>
@@ -171,3 +227,14 @@
     </div>
   {/if}
 </div>
+
+<style>
+  @keyframes count-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  :global(.count-animate) {
+    animation: count-pulse 0.3s ease-out;
+  }
+</style>

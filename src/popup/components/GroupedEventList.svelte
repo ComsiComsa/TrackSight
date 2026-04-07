@@ -69,7 +69,7 @@
 
 <div class="flex-1 overflow-auto min-h-0" bind:this={listContainer}>
   {#if events.length === 0}
-    <div class="flex flex-col items-center justify-center h-full text-gray-400 px-6">
+    <div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 px-6">
       <div class="text-3xl mb-2">📡</div>
       <p class="text-center text-xs">{t("events.empty")}</p>
       <p class="text-center text-[10px] mt-1">{t("events.empty.hint")}</p>
@@ -78,7 +78,7 @@
     {#each grouped as [name, group]}
       {@const isCollapsed = collapsed.has(name)}
       <button
-        class="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-200 hover:bg-gray-100 transition-colors sticky top-0 z-[1]"
+        class="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors sticky top-0 z-[1]"
         onclick={() => toggleGroup(name)}
       >
         <span class="text-[10px] text-gray-400 w-3">{isCollapsed ? "▶" : "▼"}</span>
@@ -92,10 +92,10 @@
       {#if !isCollapsed}
         {#each group.events as event}
           <button
-            class="w-full text-left px-3 py-1.5 pl-8 border-b border-gray-100 hover:bg-indigo-50 transition-colors flex items-center gap-2"
+            class="w-full text-left px-3 py-1.5 pl-8 border-b border-gray-100 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
             onclick={() => onSelect(event)}
           >
-            <span class="font-medium text-gray-800 text-xs min-w-0 truncate">{event.eventName}</span>
+            <span class="font-medium text-gray-800 dark:text-gray-200 text-xs min-w-0 truncate">{event.eventName}</span>
             {#if event.metadata.trackingId}
               <span class="text-[10px] text-gray-400 font-mono truncate shrink-0">{event.metadata.trackingId}</span>
             {/if}
