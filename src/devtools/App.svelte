@@ -22,7 +22,9 @@
 
   async function loadSettings() {
     const result = await chrome.storage.local.get("settings");
-    if (result.settings) settings = result.settings;
+    if (result.settings) {
+      settings = { ...DEFAULT_SETTINGS, ...result.settings, customTrackers: result.settings.customTrackers ?? [], keywordRules: result.settings.keywordRules ?? [] };
+    }
   }
   loadSettings();
 
