@@ -37,7 +37,8 @@
 
   async function init() {
     await loadSettings();
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tab = tabs[0] ?? (await chrome.tabs.query({ active: true, lastFocusedWindow: true }))[0];
     if (!tab?.id) return;
     currentTabId = tab.id;
 
@@ -52,7 +53,10 @@
         }
       });
 
-      port.postMessage({ type: MSG.GET_EVENTS, payload: { tabId: tab.id } });
+      // Small delay to ensure listener is registered before background responds
+      setTimeout(() => {
+        port.postMessage({ type: MSG.GET_EVENTS, payload: { tabId: tab.id } });
+      }, 0);
     } catch {}
   }
 

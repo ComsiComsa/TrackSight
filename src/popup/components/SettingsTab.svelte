@@ -36,7 +36,7 @@
       method: newTrackerMethod,
       enabled: true,
     };
-    onSave({ ...settings, customTrackers: [...settings.customTrackers, tracker] });
+    onSave({ ...settings, customTrackers: [...(settings.customTrackers ?? []), tracker] });
     newTrackerName = "";
     newTrackerUrl = "";
     newTrackerMethod = "ANY";
@@ -44,13 +44,13 @@
   }
 
   function removeTracker(id: string) {
-    onSave({ ...settings, customTrackers: settings.customTrackers.filter((t) => t.id !== id) });
+    onSave({ ...settings, customTrackers: (settings.customTrackers ?? []).filter((t) => t.id !== id) });
   }
 
   function toggleTracker(id: string) {
     onSave({
       ...settings,
-      customTrackers: settings.customTrackers.map((t) =>
+      customTrackers: (settings.customTrackers ?? []).map((t) =>
         t.id === id ? { ...t, enabled: !t.enabled } : t
       ),
     });
