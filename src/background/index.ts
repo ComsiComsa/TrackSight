@@ -8,20 +8,27 @@ import { addEvent, getEvents, clearEvents, removeTab } from "./event-store";
 // Track connected UI ports (popup or devtools): tabId -> port[]
 const uiPorts = new Map<number, chrome.runtime.Port[]>();
 
+// Recording state — off by default
+let recording = false;
+
 // Load custom trackers and keyword rules from settings
 async function loadSettings() {
-  const result = await chrome.storage.local.get("settings");
+  const result = await chrome.storage.local.get(["settings", "recording"]);
   const settings: Settings = result.settings ?? DEFAULT_SETTINGS;
   setCustomTrackers(settings.customTrackers ?? []);
   setKeywordRules(settings.keywordRules ?? []);
+  recording = result.recording === true;
 }
 
 loadSettings();
 
-// Reload when settings change
+// Reload when settings/recording change
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.settings) {
     loadSettings();
+  }
+  if (changes.recording) {
+    recording = changes.recording.newValue === true;
   }
 });
 
@@ -63,6 +70,7 @@ chrome.runtime.onConnect.addListener((port) => {
 // Handle intercepted requests from content scripts
 chrome.runtime.onMessage.addListener((message: Message, sender) => {
   if (message.type !== MSG.INTERCEPTED_REQUEST) return;
+  if (!recording) return;
 
   const tabId = sender.tab?.id;
   if (!tabId) return;

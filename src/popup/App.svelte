@@ -59,10 +59,24 @@
       const s = changes.settings.newValue;
       settings = { ...DEFAULT_SETTINGS, ...s, customTrackers: s.customTrackers ?? [], keywordRules: s.keywordRules ?? [] };
     }
+    if (changes.recording !== undefined) {
+      paused = changes.recording.newValue !== true;
+    }
   });
+
+  async function loadRecordingState() {
+    const result = await chrome.storage.local.get("recording");
+    paused = result.recording !== true;
+  }
+
+  function toggleRecording() {
+    paused = !paused;
+    chrome.storage.local.set({ recording: !paused });
+  }
 
   async function init() {
     await loadSettings();
+    await loadRecordingState();
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     const tab = tabs[0] ?? (await chrome.tabs.query({ active: true, lastFocusedWindow: true }))[0];
     if (!tab?.id) return;
@@ -171,7 +185,7 @@
     <div class="flex items-center gap-0.5">
       <!-- Record/Pause -->
       <button
-        onclick={() => (paused = !paused)}
+        onclick={toggleRecording}
         class="p-1.5 rounded transition-colors hover:bg-indigo-500/50"
         title={paused ? t("events.paused") : t("events.recording")}
       >
