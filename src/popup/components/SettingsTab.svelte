@@ -4,7 +4,7 @@
   interface Props {
     settings: Settings;
     t: (key: string) => string;
-    onSave: (settings: Settings) => void;
+    onSave: (patch: Partial<Settings>) => void;
   }
 
   let { settings, t, onSave }: Props = $props();
@@ -34,7 +34,7 @@
   let keywordError = $state("");
 
   function setTheme(theme: Settings["theme"]) {
-    onSave({ ...settings, theme });
+    onSave({ theme });
   }
 
   // --- Custom trackers ---
@@ -53,7 +53,7 @@
       method: newTrackerMethod,
       enabled: true,
     };
-    onSave({ ...settings, customTrackers: [...trackers, tracker] });
+    onSave({ customTrackers: [...trackers, tracker] });
     newTrackerName = "";
     newTrackerUrl = "";
     newTrackerMethod = "ANY";
@@ -62,16 +62,11 @@
   }
 
   function removeTracker(id: string) {
-    onSave({ ...settings, customTrackers: trackers.filter((t) => t.id !== id) });
+    onSave({ customTrackers: trackers.filter((t) => t.id !== id) });
   }
 
   function toggleTracker(id: string) {
-    onSave({
-      ...settings,
-      customTrackers: trackers.map((t) =>
-        t.id === id ? { ...t, enabled: !t.enabled } : t
-      ),
-    });
+    onSave({ customTrackers: trackers.map((t) => t.id === id ? { ...t, enabled: !t.enabled } : t) });
   }
 
   // --- Keyword rules ---
@@ -93,7 +88,7 @@
       matchIn: newKeywordMatch,
       enabled: true,
     };
-    onSave({ ...settings, keywordRules: [...rules, rule] });
+    onSave({ keywordRules: [...rules, rule] });
     newKeywordLabel = "";
     newKeywordWords = "";
     newKeywordMatch = "both";
@@ -102,16 +97,11 @@
   }
 
   function removeKeywordRule(id: string) {
-    onSave({ ...settings, keywordRules: rules.filter((r) => r.id !== id) });
+    onSave({ keywordRules: rules.filter((r) => r.id !== id) });
   }
 
   function toggleKeywordRule(id: string) {
-    onSave({
-      ...settings,
-      keywordRules: rules.map((r) =>
-        r.id === id ? { ...r, enabled: !r.enabled } : r
-      ),
-    });
+    onSave({ keywordRules: rules.map((r) => r.id === id ? { ...r, enabled: !r.enabled } : r) });
   }
 </script>
 

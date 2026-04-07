@@ -40,16 +40,15 @@
     }
   }
 
-  async function saveSettings(newSettings: Settings) {
-    // Always read latest from storage to avoid overwriting other fields
+  async function saveSettings(patch: Partial<Settings>) {
+    // Always read latest from storage, then apply only the changed fields
     const stored = (await chrome.storage.local.get("settings")).settings ?? {};
-    const merged = {
-      ...DEFAULT_SETTINGS,
-      ...stored,
-      ...newSettings,
-      customTrackers: Array.isArray(newSettings.customTrackers) ? newSettings.customTrackers : (Array.isArray(stored.customTrackers) ? stored.customTrackers : []),
-      keywordRules: Array.isArray(newSettings.keywordRules) ? newSettings.keywordRules : (Array.isArray(stored.keywordRules) ? stored.keywordRules : []),
-    };
+    const base = { ...DEFAULT_SETTINGS, ...stored };
+    // Ensure arrays are always valid
+    base.customTrackers = Array.isArray(base.customTrackers) ? base.customTrackers : [];
+    base.keywordRules = Array.isArray(base.keywordRules) ? base.keywordRules : [];
+    // Apply patch on top
+    const merged = { ...base, ...patch };
     settings = merged;
     await chrome.storage.local.set({ settings: merged });
   }

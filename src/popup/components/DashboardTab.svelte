@@ -63,32 +63,27 @@
       }
     }
 
-    const sorted = [...map.values()].sort((a, b) => b.eventCount - a.eventCount);
+    return [...map.values()].sort((a, b) => b.eventCount - a.eventCount);
+  });
 
-    // Detect count changes and trigger animations
+  // Animate counters when they increase (must be in $effect, not $derived)
+  $effect(() => {
     const newAnimating = new Set<string>();
-    for (const tr of sorted) {
+    for (const tr of trackers) {
       const prev = prevCounts.get(tr.trackerName);
       if (prev !== undefined && prev < tr.eventCount) {
         newAnimating.add(tr.trackerName);
       }
     }
-
-    if (newAnimating.size > 0) {
-      animatingTrackers = newAnimating;
-      setTimeout(() => {
-        animatingTrackers = new Set();
-      }, 350);
-    }
-
-    // Update previous counts
     const nextCounts = new Map<string, number>();
-    for (const tr of sorted) {
+    for (const tr of trackers) {
       nextCounts.set(tr.trackerName, tr.eventCount);
     }
     prevCounts = nextCounts;
-
-    return sorted;
+    if (newAnimating.size > 0) {
+      animatingTrackers = newAnimating;
+      setTimeout(() => { animatingTrackers = new Set(); }, 350);
+    }
   });
 
   function formatTime(ts: number): string {
