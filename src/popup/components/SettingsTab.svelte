@@ -144,18 +144,24 @@
 
     {#if showAddKeyword}
       <div class="bg-gray-50 rounded-lg border border-gray-200 p-2.5 mb-2 space-y-2">
-        <input
-          type="text"
-          placeholder={t("settings.keyword_rules.label") + " (e.g. Backend Events)"}
-          bind:value={newKeywordLabel}
-          class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400"
-        />
-        <input
-          type="text"
-          placeholder={t("settings.keyword_rules.keywords") + " (e.g. /track, /event, analytics)"}
-          bind:value={newKeywordWords}
-          class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono"
-        />
+        <div>
+          <input
+            type="text"
+            placeholder="e.g. Backend Events"
+            bind:value={newKeywordLabel}
+            class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400"
+          />
+          <div class="text-[9px] text-gray-400 mt-0.5 px-1">Display name for matched requests</div>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="e.g. /track, /event, analytics"
+            bind:value={newKeywordWords}
+            class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono"
+          />
+          <div class="text-[9px] text-gray-400 mt-0.5 px-1">Comma-separated keywords to match in requests</div>
+        </div>
         {#if keywordError}
           <div class="text-[10px] text-red-500">{keywordError}</div>
         {/if}
@@ -216,10 +222,16 @@
 
     {#if showAddTracker}
       <div class="bg-gray-50 rounded-lg border border-gray-200 p-2.5 mb-2 space-y-2">
-        <input type="text" placeholder={t("settings.custom_trackers.name")} bind:value={newTrackerName}
-          class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400" />
-        <input type="text" placeholder={t("settings.custom_trackers.url_pattern") + " (e.g. api.example.com/events)"} bind:value={newTrackerUrl}
-          class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono" />
+        <div>
+          <input type="text" placeholder="e.g. My Analytics" bind:value={newTrackerName}
+            class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400" />
+          <div class="text-[9px] text-gray-400 mt-0.5 px-1">Display name for this tracker</div>
+        </div>
+        <div>
+          <input type="text" placeholder="e.g. api.example.com/events" bind:value={newTrackerUrl}
+            class="w-full px-2 py-1 text-xs rounded border border-gray-200 focus:outline-none focus:border-indigo-400 font-mono" />
+          <div class="text-[9px] text-gray-400 mt-0.5 px-1">Part of URL to match (e.g. domain, path, or both)</div>
+        </div>
         {#if trackerError}
           <div class="text-[10px] text-red-500">{trackerError}</div>
         {/if}

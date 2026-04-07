@@ -41,9 +41,17 @@
   }
 
   async function saveSettings(newSettings: Settings) {
-    const safe = { ...newSettings, customTrackers: newSettings.customTrackers ?? [], keywordRules: newSettings.keywordRules ?? [] };
-    settings = safe;
-    await chrome.storage.local.set({ settings: safe });
+    // Always read latest from storage to avoid overwriting other fields
+    const stored = (await chrome.storage.local.get("settings")).settings ?? {};
+    const merged = {
+      ...DEFAULT_SETTINGS,
+      ...stored,
+      ...newSettings,
+      customTrackers: Array.isArray(newSettings.customTrackers) ? newSettings.customTrackers : (Array.isArray(stored.customTrackers) ? stored.customTrackers : []),
+      keywordRules: Array.isArray(newSettings.keywordRules) ? newSettings.keywordRules : (Array.isArray(stored.keywordRules) ? stored.keywordRules : []),
+    };
+    settings = merged;
+    await chrome.storage.local.set({ settings: merged });
   }
 
   // Sync settings when changed from devtools or another context
