@@ -133,6 +133,10 @@ src/
 public/icons/       Extension icons
 ```
 
+## Built with AI
+
+This project is developed with the help of [Claude Code](https://claude.ai/code) (Anthropic). AI assists with code generation, architecture decisions, and development workflow — while all design and product decisions are made by the developer.
+
 ## Privacy
 
 TrackSight does not collect, store, or transmit any data. Everything is processed locally in your browser. See [PRIVACY.md](PRIVACY.md) for details.
