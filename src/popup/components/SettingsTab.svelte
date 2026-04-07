@@ -268,9 +268,9 @@
   <div class="border-t border-gray-200 pt-3">
     <div class="text-xs font-medium text-gray-700 mb-1">{t("settings.about")}</div>
     <div class="text-[10px] text-gray-500 space-y-0.5">
-      <p><strong>TrackSight</strong> {t("settings.about.version")} 0.1.0</p>
+      <p><strong>TrackSight</strong> {t("settings.about.version")} 1.0.0</p>
       <p>{t("settings.about.description")}</p>
-      <p class="pt-1 text-gray-400">17 built-in trackers + custom URL patterns + keyword rules</p>
+      <p class="pt-1 text-gray-400">21 built-in trackers + custom URL patterns + keyword rules</p>
     </div>
   </div>
 </div>
