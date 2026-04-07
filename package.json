@@ -2,11 +2,26 @@
   "name": "tracksight",
   "version": "0.1.0",
   "type": "module",
+  "author": "ComsiComsa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ComsiComsa/TrackSight"
+  },
+  "keywords": [
+    "chrome-extension",
+    "analytics",
+    "tracking",
+    "devtools",
+    "google-analytics",
+    "facebook-pixel",
+    "inspector"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
-  "description": "Chrome extension to intercept and inspect analytics events",
+  "description": "Chrome extension to intercept and inspect analytics events from popular trackers in real-time",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.33",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TrackSight - Store Assets Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f5f5f5; padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 60px; }
+
+  h2 { color: #333; margin-bottom: 12px; font-size: 14px; }
+  .hint { color: #999; font-size: 12px; margin-bottom: 8px; }
+
+  /* ===== Small Tile 440x280 ===== */
+  .tile-small {
+    width: 440px; height: 280px;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #9333EA 100%);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 28px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile-small::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .tile-small::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .tile-small .logo {
+    width: 100px; height: 100px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
+    z-index: 1;
+  }
+  .tile-small .text { z-index: 1; color: white; }
+  .tile-small .title { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
+  .tile-small .subtitle { font-size: 13px; font-weight: 400; opacity: 0.8; margin-top: 8px; line-height: 1.4; max-width: 220px; }
+
+  /* ===== Large Marquee 1280x800 ===== */
+  .tile-large {
+    width: 1280px; height: 800px;
+    background: linear-gradient(145deg, #1e1b4b 0%, #312e81 30%, #4F46E5 60%, #7C3AED 100%);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    color: white;
+  }
+  .tile-large::before {
+    content: '';
+    position: absolute;
+    top: -150px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .tile-large .top-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 48px;
+    z-index: 1;
+  }
+  .tile-large .logo {
+    width: 80px; height: 80px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  }
+  .tile-large .brand {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -1px;
+  }
+  .tile-large .tagline {
+    font-size: 22px;
+    opacity: 0.7;
+    font-weight: 400;
+    margin-bottom: 56px;
+    z-index: 1;
+    text-align: center;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  /* Mock browser window */
+  .mock-browser {
+    width: 900px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+    overflow: hidden;
+    z-index: 1;
+  }
+  .mock-titlebar {
+    height: 36px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 7px;
+  }
+  .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .mock-dot.r { background: #ef4444; }
+  .mock-dot.y { background: #f59e0b; }
+  .mock-dot.g { background: #22c55e; }
+  .mock-content {
+    padding: 20px 24px;
+    font-size: 13px;
+    color: #1f2937;
+  }
+  .mock-header {
+    background: #4F46E5;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .mock-header .dot-rec { width: 8px; height: 8px; border-radius: 50%; background: #f87171; }
+  .mock-header .count { opacity: 0.7; font-weight: 400; }
+
+  /* Tracker cards in mock */
+  .mock-cards { display: flex; flex-direction: column; gap: 10px; }
+  .mock-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .mc-name { font-weight: 600; font-size: 12px; }
+  .mc-id { font-size: 10px; color: #6b7280; font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; }
+  .mc-count { margin-left: auto; font-size: 10px; color: #9ca3af; }
+  .mc-events { display: flex; gap: 4px; }
+  .mc-event { font-size: 10px; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #4b5563; }
+
+  /* Tracker colors */
+  .ga4 { background: #E37400; }
+  .fb { background: #1877F2; }
+  .tt { background: #06B6D4; }
+  .amp { background: #3B82F6; }
+  .hj { background: #EF4444; }
+
+  /* Feature badges */
+  .features {
+    display: flex;
+    gap: 12px;
+    position: absolute;
+    bottom: 36px;
+    z-index: 1;
+  }
+  .feat {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <h2>Small Promo Tile (440 x 280) - right-click -> Save as image</h2>
+  <p class="hint">Chrome Web Store small promotional tile</p>
+  <div class="tile-small">
+    <img class="logo" src="../public/icons/logo.svg" alt="TrackSight">
+    <div class="text">
+      <div class="title">TrackSight</div>
+      <div class="subtitle">See every analytics event fired on any page. In real-time.</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <h2>Large Marquee (1280 x 800) - right-click -> Save as image</h2>
+  <p class="hint">Chrome Web Store screenshot / marquee image</p>
+  <div class="tile-large">
+    <div class="top-section">
+      <img class="logo" src="../public/icons/logo.svg" alt="TrackSight">
+      <div class="brand">TrackSight</div>
+    </div>
+    <div class="tagline">Intercept and inspect analytics events from 18+ trackers.<br>Zero data collection. 100% local.</div>
+
+    <div class="mock-browser">
+      <div class="mock-titlebar">
+        <div class="mock-dot r"></div>
+        <div class="mock-dot y"></div>
+        <div class="mock-dot g"></div>
+      </div>
+      <div class="mock-content">
+        <div class="mock-header">
+          <span>TrackSight</span>
+          <div class="dot-rec"></div>
+          <span class="count">12 events</span>
+        </div>
+        <div class="mock-cards">
+          <div class="mock-card">
+            <div class="mc-dot ga4"></div>
+            <span class="mc-name" style="color:#E37400">Google Analytics 4</span>
+            <span class="mc-id">G-XXXXXXXXX</span>
+            <div class="mc-events">
+              <span class="mc-event">page_view x3</span>
+              <span class="mc-event">scroll x2</span>
+            </div>
+            <span class="mc-count">5 events</span>
+          </div>
+          <div class="mock-card">
+            <div class="mc-dot fb"></div>
+            <span class="mc-name" style="color:#1877F2">Facebook Pixel</span>
+            <span class="mc-id">990354783211931</span>
+            <div class="mc-events">
+              <span class="mc-event">PageView x1</span>
+              <span class="mc-event">ViewContent x1</span>
+            </div>
+            <span class="mc-count">3 events</span>
+          </div>
+          <div class="mock-card">
+            <div class="mc-dot tt"></div>
+            <span class="mc-name" style="color:#06B6D4">TikTok Pixel</span>
+            <span class="mc-id">D0NEGDRC77U</span>
+            <div class="mc-events">
+              <span class="mc-event">Pageview x1</span>
+              <span class="mc-event">PageVisit x1</span>
+            </div>
+            <span class="mc-count">2 events</span>
+          </div>
+          <div class="mock-card">
+            <div class="mc-dot amp"></div>
+            <span class="mc-name" style="color:#3B82F6">Amplitude</span>
+            <span class="mc-id">9e9405058a9907...</span>
+            <div class="mc-events">
+              <span class="mc-event">screen_presented x1</span>
+            </div>
+            <span class="mc-count">1 event</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <span class="feat">18+ Trackers</span>
+      <span class="feat">Real-time</span>
+      <span class="feat">Zero Collection</span>
+      <span class="feat">DevTools Panel</span>
+      <span class="feat">Export JSON/CSV</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -25,9 +25,6 @@
     onSave({ ...settings, theme });
   }
 
-  function setLanguage(lang: Settings["language"]) {
-    onSave({ ...settings, language: lang });
-  }
 
   // --- Custom trackers ---
   function addTracker() {
@@ -101,21 +98,6 @@
           class="flex-1 px-2 py-1.5 text-xs rounded-lg border transition-colors {settings.theme === theme ? 'border-indigo-400 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}"
         >{t(`settings.theme.${theme}`)}</button>
       {/each}
-    </div>
-  </div>
-
-  <!-- Language -->
-  <div>
-    <div class="text-xs font-medium text-gray-700 mb-1.5">{t("settings.language")}</div>
-    <div class="flex gap-1.5">
-      <button
-        onclick={() => setLanguage("en")}
-        class="flex-1 px-2 py-1.5 text-xs rounded-lg border transition-colors {settings.language === 'en' ? 'border-indigo-400 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}"
-      >English</button>
-      <button
-        onclick={() => setLanguage("ru")}
-        class="flex-1 px-2 py-1.5 text-xs rounded-lg border transition-colors {settings.language === 'ru' ? 'border-indigo-400 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}"
-      >Русский</button>
     </div>
   </div>
 

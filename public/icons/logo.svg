@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="lens" x1="160" y1="140" x2="340" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E0E7FF"/>
+      <stop offset="100%" stop-color="#A5B4FC"/>
+    </linearGradient>
+    <linearGradient id="signal1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="signal2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="signal3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <!-- Magnifying glass body -->
+  <circle cx="230" cy="230" r="120" stroke="white" stroke-width="32" fill="none" opacity="0.9"/>
+  <circle cx="230" cy="230" r="80" fill="url(#lens)" opacity="0.25"/>
+
+  <!-- Handle -->
+  <line x1="320" y1="320" x2="420" y2="420" stroke="white" stroke-width="36" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Signal waves inside lens (representing tracking data) -->
+  <!-- Bar chart inside lens -->
+  <rect x="180" y="250" width="22" height="40" rx="4" fill="url(#signal1)" opacity="0.9"/>
+  <rect x="210" y="220" width="22" height="70" rx="4" fill="url(#signal2)" opacity="0.9"/>
+  <rect x="240" y="195" width="22" height="95" rx="4" fill="url(#signal3)" opacity="0.9"/>
+  <rect x="270" y="235" width="22" height="55" rx="4" fill="url(#signal1)" opacity="0.9"/>
+
+  <!-- Small dot accents -->
+  <circle cx="191" cy="240" r="4" fill="white" opacity="0.7"/>
+  <circle cx="221" cy="210" r="4" fill="white" opacity="0.7"/>
+  <circle cx="251" cy="185" r="4" fill="white" opacity="0.7"/>
+  <circle cx="281" cy="225" r="4" fill="white" opacity="0.7"/>
+
+  <!-- Connecting line through dots -->
+  <polyline points="191,240 221,210 251,185 281,225" stroke="white" stroke-width="2.5" fill="none" opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- WiFi/signal arcs top-right corner -->
+  <path d="M370 100 A30 30 0 0 1 400 130" stroke="white" stroke-width="5" fill="none" opacity="0.3" stroke-linecap="round"/>
+  <path d="M355 85 A50 50 0 0 1 415 145" stroke="white" stroke-width="5" fill="none" opacity="0.2" stroke-linecap="round"/>
+  <path d="M340 70 A70 70 0 0 1 430 160" stroke="white" stroke-width="5" fill="none" opacity="0.12" stroke-linecap="round"/>
+</svg>
